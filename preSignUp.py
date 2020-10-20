@@ -6,3 +6,4 @@ def presignup(event, context):
                 "message": "pre-safe-lambda", 
                 "body": json.dumps(event),
             }
+

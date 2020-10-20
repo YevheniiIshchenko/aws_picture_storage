@@ -1,3 +1,5 @@
+org: eugeny
+app: storage-app
 
 service: storage
 
@@ -6,6 +8,12 @@ frameworkVersion: '2'
 provider:
   name: aws
   runtime: python3.8
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - cognito-idp:*
+      Resource:
+        - Fn::GetAtt: [CognitoUserPool, Arn]
 
 
 functions:
@@ -23,8 +31,13 @@ functions:
       - cognitoUserPool:
           pool: pictures-user-pool
           trigger: PreSignUp
-          
-    
+
+
+  signin:
+    handler: signIn.signIn
+    events:
+      - http: GET signIn
+
 
 resources:
   Resources:

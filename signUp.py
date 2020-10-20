@@ -10,12 +10,14 @@ USER_POOL_ID = 'us-east-1_m3djn2df2'
 CLIENT_ID = '3644ops1enoprcv8dc8ipvt78b'
 CLIENT_SECRET = '1ehv9b97199imosg512qoke2l4p4u938kv7p3nvdah96um653jhq'
 
+
 def get_secret_hash(username):
     msg = username + CLIENT_ID
     dig = hmac.new(str(CLIENT_SECRET).encode('utf-8'), 
         msg = str(msg).encode('utf-8'),   digestmod=hashlib.sha256).digest()
     d2 = base64.b64encode(dig).decode()
     return d2
+
 
 def signup(event, context):
     for field in ["email", "password"]:
