@@ -12,6 +12,7 @@ provider:
     - Effect: Allow
       Action:
         - cognito-idp:*
+        - api-gateway:*
       Resource:
         - Fn::GetAtt: [CognitoUserPool, Arn]
 
@@ -20,10 +21,16 @@ functions:
   hello:
     handler: handler.hello
     events:
-      - http: GET hello
+      - http:
+          path: /hello
+          method: get
   
   signup:
     handler: signUp.signup
+    events:
+      - http:
+          path: /signup
+          method: get
 
   presignup:
     handler: preSignUp.presignup

@@ -4,6 +4,7 @@ import json
 def hello(event, context):
     body = {
         "message": "You smell like teen spirit (PUDGE)))0)",
+        "answer": event,
     }
 
     response = {

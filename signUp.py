@@ -26,6 +26,7 @@ def signup(event, context):
     email = event["email"]
     password = event['password']
     client = boto3.client('cognito-idp')
+    print(event)
     try:
         resp = client.sign_up(
             ClientId=CLIENT_ID,
