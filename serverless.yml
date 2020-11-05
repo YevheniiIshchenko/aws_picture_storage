@@ -11,10 +11,22 @@ provider:
   iamRoleStatements:
     - Effect: Allow
       Action:
-        - cognito-idp:*
-        - api-gateway:*
+        - "cognito-idp:*"
       Resource:
         - Fn::GetAtt: [CognitoUserPool, Arn]
+    - Effect: Allow
+      "Action": [
+          "s3:*"
+      ]
+      Resource: [
+          "arn:aws:s3:::yevhenii-aws-lambda-pictures",
+          "arn:aws:s3:::yevhenii-aws-lambda-pictures/*",
+      ]
+
+#layers:
+#  putPicture:
+#    path: psycopg2.zip # required, path to layer contents on disk
+#    name: psy2
 
 
 functions:
@@ -23,27 +35,78 @@ functions:
     events:
       - http:
           path: /hello
-          method: get
+          method: post
   
   signup:
-    handler: signUp.signup
+    handler: signUp.handler
     events:
       - http:
           path: /signup
-          method: get
+          method: post
 
   presignup:
-    handler: preSignUp.presignup
+    handler: preSignUp.handler
     events:
       - cognitoUserPool:
           pool: pictures-user-pool
           trigger: PreSignUp
 
-
   signin:
-    handler: signIn.signIn
+    handler: signIn.handler
     events:
-      - http: GET signIn
+      - http:
+          path: /signin
+          method: post
+
+  preSignedPost:
+    handler: preSignedPost.handler
+    events:
+      - http:
+          path: /bucket
+          method: get
+          authorizer:
+            name: MyAuthorizer
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt:
+                - CognitoUserPool
+                - Arn
+
+  putPicture:
+    handler: putPicture.handler
+    events:
+      - s3:
+          bucket: yevhenii-aws-lambda-pictures
+          event: s3:ObjectCreated:*
+          existing: true
+
+  listPictures:
+    handler: listPicures.handler
+    events:
+      - http:
+          path: /list
+          method: get
+          authorizer:
+            name: MyAuthorizer
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt:
+                - CognitoUserPool
+                - Arn
+
+  deletePicture:
+    handler: deletePicture.handler
+    events:
+      - http:
+          path: /delete
+          method: post
+          authorizer:
+            name: MyAuthorizer
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt:
+                - CognitoUserPool
+                - Arn
 
 
 resources:
@@ -68,6 +131,7 @@ resources:
             TemporaryPasswordValidityDays: 7
 
 
+
     CognitoUserPoolClient:
       Type: AWS::Cognito::UserPoolClient
       Properties:
@@ -78,3 +142,7 @@ resources:
         ExplicitAuthFlows:
           - ADMIN_NO_SRP_AUTH
         GenerateSecret: true
+
+#plugins:
+#  - serverless-python-requirements
+#  -

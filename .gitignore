@@ -16,7 +16,11 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
-*.idea
+.idea/
+venv/
+node_modules/
+*.png
+.DS_Store
 
 # Serverless directories
 .serverless

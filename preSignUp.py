@@ -1,9 +1,6 @@
-import json
+def handler(event, context):
+    event['response']['autoConfirmUser'] = True
 
+    return event
 
-def presignup(event, context):    
-    return {
-                "message": "pre-safe-lambda", 
-                "body": json.dumps(event),
-            }
 

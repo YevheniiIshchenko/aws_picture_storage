@@ -13,7 +13,7 @@ CLIENT_SECRET = '1ehv9b97199imosg512qoke2l4p4u938kv7p3nvdah96um653jhq'
 def get_secret_hash(username):
     msg = username + CLIENT_ID
     dig = hmac.new(str(CLIENT_SECRET).encode('utf-8'),
-    msg = str(msg).encode('utf-8'), digestmod=hashlib.sha256).digest()
+                   msg=str(msg).encode('utf-8'), digestmod=hashlib.sha256).digest()
     d2 = base64.b64encode(dig).decode()
     return d2
 
@@ -43,16 +43,18 @@ def initiate_auth(client, email, password):
     return resp, None
 
 
-def signIn(event, context):
+def signin(event, context):
     client = boto3.client('cognito-idp')
+    params = event.get('body')
+    params = json.loads(params)
     for field in ["email", "password"]:
-        if event.get(field) is None:
+        if params.get(field) is None:
             return {"error": True,
                     "success": False,
                     "message": f"{field} is required",
                     "data": None}
-    email = event.get('email')
-    password = event.get('password')
+    email = params.get('email')
+    password = params.get('password')
     resp, msg = initiate_auth(client, email, password)
     if msg is not None:
         return {'message': msg,
@@ -77,3 +79,14 @@ def signIn(event, context):
             "data": None,
             "message": None
         }
+
+
+def handler(event, context):
+    responseBody = signin(event, context)
+    response = {
+        "statusCode": 200,
+        "headers": {},
+        "body": json.dumps(responseBody),
+        "isBase64Encoded": False,
+    }
+    return response
