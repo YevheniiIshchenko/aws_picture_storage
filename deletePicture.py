@@ -1,26 +1,17 @@
 import boto3
 import json
-import psycopg2
+
+from db_connect import conn, cursor
 
 s3 = boto3.resource('s3')
 bucket_name = 'yevhenii-aws-lambda-pictures'
-
-conn = psycopg2.connect(
-    database="postgres",
-    user="master",
-    password="qaz123_zxc",
-    host="database-1.c6my26cyocxp.us-east-1.rds.amazonaws.com",
-    port='5432'
-)
-
-cursor = conn.cursor()
 
 
 def delete(event, context) -> str:
     email = event['requestContext']['authorizer']['claims']['email']
 
     params = json.loads(event['body'])
-    if not params['key'] :
+    if not params.get('key') :
         return 'Key is absent!'
     key=params['key']
     key_s3 = email+'_'+key

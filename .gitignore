@@ -21,6 +21,7 @@ venv/
 node_modules/
 *.png
 .DS_Store
+db_connect.py
 
 # Serverless directories
 .serverless
